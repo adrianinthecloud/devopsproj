@@ -2,7 +2,7 @@
    become: yes
    tasks:
     - name: git clone
-      command: git clone https://github.com/adrianinthecloud/devopsproj.git || true
+      command: git clone https://github.com/adrianinthecloud/devopsproj.git
       args:
         chdir: /home/devops/slavedata
         creates: /home/devops/slavedata/devopsproj
