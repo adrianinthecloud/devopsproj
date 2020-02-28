@@ -1,0 +1,56 @@
+ - hosts: aws
+   become: yes
+   tasks:
+    - name: install software-properties-common
+      apt:
+       name: software-properties-common
+       state: latest
+      when: ansible_distribution == 'Ubuntu'
+    - apt_repository:
+       repo: 'ppa:openjdk-r/ppa'
+       update_cache: yes
+      when: ansible_distribution == 'Ubuntu'
+    - name: update and upgrade
+      apt:
+       upgrade: 'yes'
+       update_cache: yes
+       cache_valid_time: 86400
+    - name: install git
+      apt:
+       name: git
+       state: latest
+      when: ansible_distribution == 'Ubuntu'
+    - name: install unzip
+      apt:
+       name: unzip
+       state: latest
+      when: ansible_distribution == 'Ubuntu'
+    - name: install xvfb
+      apt:
+       name: xvfb
+       state: latest
+      when: ansible_distribution == 'Ubuntu'
+    - name: install libxi6
+      apt:
+       name: libxi6
+       state: latest
+      when: ansible_distribution == 'Ubuntu'
+    - name: install libgconf-2-4
+      apt:
+       name: libgconf-2-4
+       state: latest
+      when: ansible_distribution == 'Ubuntu'
+    - name: install openjdk8
+      apt:
+       name: openjdk-8-jdk
+       state: latest
+      when: ansible_distribution == 'Ubuntu'
+    - name: Check slavedata folder exists
+      stat:
+       path: /home/devops/slavedata
+      register: slavedata_result
+    - name: Create the slavedata folder, if is doesnt exist already
+      file:
+       path: /home/devops/slavedata
+       state: directory
+      when: slavedata_result.stat.exists == False

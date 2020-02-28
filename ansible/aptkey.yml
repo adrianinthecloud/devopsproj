@@ -1,0 +1,46 @@
+ - hosts: aws
+   become: yes
+   tasks:
+    - name: Add a Google linux signing key to apt-key
+      apt_key:
+       url: https://dl-ssl.google.com/linux/linux_signing_key.pub
+       state: present
+    - name: copy content to google-chrome.list
+      copy:
+        dest: "/etc/apt/sources.list.d/google-chrome.list"
+        content: "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable main"
+    - name: update
+      apt:
+       update_cache: yes
+       cache_valid_time: 86400
+    - name: install google-chrome-stable
+      apt:
+       name: google-chrome-stable
+       state: latest
+    - name: check chrome driver exists
+      stat:
+       path: /usr/bin/chromedriver
+      register: slavedata_result
+    - name: download and unzip chromedriver, if it doesnt exist already
+      unarchive:
+        src: https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip
+        dest: /home/devops/slavedata/
+        remote_src: yes
+      when: slavedata_result.stat.exists == False
+    - name: copy chromedriver to /usr/bin/
+      copy:
+        src: /home/devops/slavedata/chromedriver
+        dest: /usr/bin/chromedriver
+        owner: root
+        group: root
+        mode: a+x
+        remote_src: yes
+    - name: download selenium-server-standalone-3.13.0.jar
+      get_url:
+        url: https://selenium-release.storage.googleapis.com/3.13/selenium-server-standalone-3.13.0.jar
+        dest: /home/devops/slavedata/selenium-server-standalone-3.13.0.jar
+    - name: download and unzip testng-6.8.7.jar.zip
+      unarchive:
+        src: http://www.java2s.com/Code/JarDownload/testng/testng-6.8.7.jar.zip
+        dest: /home/devops/slavedata/
+        remote_src: yes

@@ -1,0 +1,23 @@
+ - hosts: test
+   become: yes
+   tasks:
+    - name: git clone
+      command: git clone https://github.com/adrianinthecloud/devopsproj.git || true
+      args:
+        chdir: /home/devops/slavedata
+        creates: /home/devops/slavedata/devopsproj
+    - name: execute test
+      command: java -jar test.jar
+      become: yes
+      become_user: devops
+      args:
+        chdir: /home/devops/slavedata/devopsproj
+      register: test_result
+    - debug:
+        msg: "stout = {{test_result.stdout_lines[0]}}"
+    - name: delete if not pass the test
+      shell:
+        cmd: "docker rm -f `docker ps -aq`"
+      when: test_result.stdout_lines[0].find('Pass') == -1
+
+      

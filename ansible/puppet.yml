@@ -1,0 +1,19 @@
+ - hosts: aws
+   become: yes
+   tasks:
+    - name: update
+      apt:
+       update_cache: yes
+    - name: download and install puppet package
+      get_url:
+       url: https://apt.puppetlabs.com/puppet-release-bionic.deb
+       dest: /home/devops/slavedata/
+    - name: Install puppet-release-binoic.deb
+      apt:
+        deb: /home/devops/slavedata/puppet-release-bionic.deb
+    - name: update
+      apt:
+       update_cache: yes
+    - name: install Puppet agent on slaves
+      apt:
+        name: puppet
